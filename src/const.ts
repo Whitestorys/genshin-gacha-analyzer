@@ -3,6 +3,8 @@ import isMobile from 'ismobilejs';
 import parseToDate from 'utils/parseToDate';
 import invert from 'lodash/invert';
 
+(window as any).version = '1.0.3';
+
 export const DEVICE = isMobile(window.navigator);
 
 export const ISMOBILE = DEVICE.any;
@@ -126,6 +128,48 @@ export const CHARACTER_POOLS: PoolType[] = [
     four: ['烟绯', '诺艾尔', '迪奥娜'],
     name: '陵薮市朝',
   },
+  {
+    from: '2021-05-18 18:00:00',
+    to: '2021-06-08 14:59:59',
+    five: ['优菈'],
+    four: ['辛焱', '行秋', '北斗'],
+    name: '浪沫的旋舞',
+  },
+  {
+    from: '2021-06-09 06:00:00',
+    to: '2021-06-29 17:59:59',
+    five: ['可莉'],
+    four: ['芭芭拉', '砂糖', '菲谢尔'],
+    name: '逃跑的太阳',
+  },
+  {
+    from: '2021-06-29 18:00:00',
+    to: '2021-07-20 14:59:59',
+    five: ['枫原万叶'],
+    four: ['罗莎莉亚', '班尼特', '雷泽'],
+    name: '红叶逐荒波',
+  },
+  {
+    from: '2021-07-21 06:00:00',
+    to: '2021-08-10 17:59:59',
+    five: ['神里绫华'],
+    four: ['凝光', '重云', '烟绯'],
+    name: '白鹭之庭',
+  },
+  {
+    from: '2021-08-10 18:00:00',
+    to: '2021-08-31 14:59:59',
+    five: ['宵宫'],
+    four: ['早柚', '迪奥娜', '辛焱'],
+    name: '焰色天河',
+  },
+  {
+    from: '2021-09-01 06:00:00',
+    to: '2021-09-21 17:59:59',
+    five: ['雷电将军'],
+    four: ['九条裟罗', '香菱', '砂糖'],
+    name: '影寂天下人',
+  },
 ].map((v) => {
   const o: PoolType = v as any;
   o.from = +parseToDate(v.from);
@@ -205,6 +249,48 @@ export const WEAPON_POOLS: PoolType[] = [
     four: ['笛剑', '千岩古剑', '祭礼弓', '昭心', '千岩长枪'],
     name: '神铸赋形',
   },
+  {
+    from: '2021-05-18 18:00:00',
+    to: '2021-06-08 14:59:59',
+    five: ['松籁响起之时', '风鹰剑'],
+    four: ['祭礼剑', '雨裁', '匣里灭辰', '祭礼残章', '弓藏'],
+    name: '神铸赋形',
+  },
+  {
+    from: '2021-06-09 06:00:00',
+    to: '2021-06-29 17:59:59',
+    five: ['天空之傲', '四风原典'],
+    four: ['匣里龙吟', '钟剑', '西风长枪', '流浪乐章', '幽夜华尔兹'],
+    name: '神铸赋形',
+  },
+  {
+    from: '2021-06-29 18:00:00',
+    to: '2021-07-20 14:59:59',
+    five: ['苍古自由之翼', '天空之卷'],
+    four: ['暗巷闪光', '西风大剑', '匣里灭辰', '暗巷的酒与诗', '暗巷猎手'],
+    name: '神铸赋形',
+  },
+  {
+    from: '2021-07-21 06:00:00',
+    to: '2021-08-10 17:59:59',
+    five: ['雾切之回光', '天空之脊'],
+    four: ['西风剑', '祭礼大剑', '西风长枪', '西风秘典', '绝弦'],
+    name: '神铸赋形',
+  },
+  {
+    from: '2021-08-10 18:00:00',
+    to: '2021-08-31 14:59:59',
+    five: ['飞雷之弦振', '天空之刃'],
+    four: ['祭礼剑', '雨裁', '匣里灭辰', '祭礼残章', '西风猎弓'],
+    name: '神铸赋形',
+  },
+  {
+    from: '2021-09-01 06:00:00',
+    to: '2021-09-21 17:59:59',
+    five: ['薙草之稻光', '无工之剑'],
+    four: ['匣里龙吟', '钟剑', '西风长枪', '流浪乐章', '祭礼弓'],
+    name: '神铸赋形',
+  },
 ].map((v) => {
   const o: PoolType = v as any;
   o.from = +parseToDate(v.from);
@@ -213,10 +299,18 @@ export const WEAPON_POOLS: PoolType[] = [
   return o;
 });
 
-export const POOL_NAME_TO_TYPE = {
+export const BASE_POOL_NAME_TO_TYPE = {
   角色活动祈愿: 'character',
   武器活动祈愿: 'weapon',
   新手祈愿: 'novice',
   常驻祈愿: 'permanent',
 };
-export const POOL_TYPE_TO_NAME = invert(POOL_NAME_TO_TYPE);
+export const POOL_TYPE_TO_NAME = invert(BASE_POOL_NAME_TO_TYPE);
+
+export const POOL_NAME_TO_TYPE = {
+  ...BASE_POOL_NAME_TO_TYPE,
+  301: 'character',
+  302: 'weapon',
+  200: 'permanent',
+  100: 'novice',
+};

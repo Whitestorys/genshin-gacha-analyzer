@@ -3,11 +3,11 @@ import { css } from '@emotion/react';
 import { FC, useCallback, useMemo, useState, Suspense, lazy, memo } from 'react';
 import { Layout, Spin } from 'antd';
 import { useGlobalContext } from 'context/GlobalContext';
-import { POOL_NAME_TO_TYPE, SHOW_DATA_ALL_KEY } from 'const';
+import { POOL_NAME_TO_TYPE, POOL_TYPE_TO_NAME, SHOW_DATA_ALL_KEY } from 'const';
 import { Data, DataItem } from 'types';
 import { Achievements } from './Achievements';
 import CustomSider from './CustomSider';
-import { CacheContextProvider } from 'context/CacheContext';
+import { CacheContextProvider, clearGlobalCache } from 'context/CacheContext';
 
 const ShowData = lazy(() =>
   import(/* webpackPrefetch: true */ './ShowData').then((module) => ({
@@ -30,8 +30,9 @@ const { Content } = Layout;
 
 export const ShowPage: FC<ShowPageProps> = function () {
   const { parsedData, isVertical } = useGlobalContext();
-  const sheetNames = Object.keys(POOL_NAME_TO_TYPE);
+  const sheetNames = Object.values(POOL_TYPE_TO_NAME);
   const getJson = useMemo(() => {
+    clearGlobalCache();
     const cache = Object.create(null);
     function getJson(key: string) {
       if (key in cache) return cache[key];
