@@ -3,7 +3,7 @@ import isMobile from 'ismobilejs';
 import parseToDate from 'utils/parseToDate';
 import invert from 'lodash/invert';
 
-(window as any).version = '1.0.4';
+(window as any).version = '1.0.6';
 
 export const DEVICE = isMobile(window.navigator);
 
@@ -177,6 +177,20 @@ export const CHARACTER_POOLS: PoolType[] = [
     four: ['罗莎莉亚', '北斗', '行秋'],
     name: '浮岳虹珠',
   },
+  {
+    from: '2021-10-13 06:00:00',
+    to: '2021-11-02 17:59:59',
+    five: ['达达利亚'],
+    four: ['凝光', '重云', '烟绯'],
+    name: '暂别冬都',
+  },
+  {
+    from: '2021-11-02 18:00:00',
+    to: '2021-11-23 14:59:59',
+    five: ['胡桃'],
+    four: ['托马', '迪奥娜', '早柚'],
+    name: '赤团开时',
+  },
 ].map((v) => {
   const o: PoolType = v as any;
   o.from = +parseToDate(v.from);
@@ -305,6 +319,20 @@ export const WEAPON_POOLS: PoolType[] = [
     four: ['笛剑', '西风大剑', '匣里灭辰', '西风秘典', '绝弦'],
     name: '神铸赋形',
   },
+  {
+    from: '2021-10-13 06:00:00',
+    to: '2021-11-02 17:59:59',
+    five: ['冬极白星', '尘世之锁'],
+    four: ['西风剑', '恶王丸', '西风长枪', '昭心', '弓藏'],
+    name: '神铸赋形',
+  },
+  {
+    from: '2021-11-02 18:00:00',
+    to: '2021-11-23 14:59:59',
+    five: ['护摩之杖', '终末嗟叹之诗'],
+    four: ['祭礼剑', '雨裁', '断浪长鳍', '流浪乐章', '曚云之月'],
+    name: '神铸赋形',
+  },
 ].map((v) => {
   const o: PoolType = v as any;
   o.from = +parseToDate(v.from);
@@ -316,8 +344,8 @@ export const WEAPON_POOLS: PoolType[] = [
 export const BASE_POOL_NAME_TO_TYPE = {
   角色活动祈愿: 'character',
   武器活动祈愿: 'weapon',
-  新手祈愿: 'novice',
   常驻祈愿: 'permanent',
+  新手祈愿: 'novice',
 };
 export const POOL_TYPE_TO_NAME = invert(BASE_POOL_NAME_TO_TYPE);
 
