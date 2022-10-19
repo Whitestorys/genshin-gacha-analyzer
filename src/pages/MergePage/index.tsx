@@ -1,54 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { FC, ReactNode, useCallback, useMemo, useState } from 'react';
-import { Button, Upload, Alert, Spin, message, AlertProps, Tooltip } from 'antd';
-import InboxOutlined from '@ant-design/icons/InboxOutlined';
-import { RcFile, UploadProps } from 'antd/lib/upload';
-import { useGlobalContext } from 'context/GlobalContext';
+import { FC, useCallback, useMemo, useState } from 'react';
+import { Button, Upload, Alert } from 'antd';
+import { RcFile } from 'antd/lib/upload';
 import UploadOutlined from '@ant-design/icons/UploadOutlined';
-import XLSXNameSpace from 'xlsx/types';
 import { FriendLinks } from 'components/FriendLinks';
-import parseExcel, { ExcelParsedObject } from 'utils/parseExcel';
-import { DataItem } from 'types';
+import { parseExcel, parseJson } from 'parser';
 import { UploadItem, UploadItemProps } from './UploadItem';
-import mergeData from './MergeShow/mergeData';
-import downloadExcel from './MergeShow/downloadExcel';
 import MergeShow from './MergeShow';
 
 type MergePageProps = {};
-// 预加载
-// @ts-ignore
-import('xlsx/dist/xlsx.mini.min.js');
-
-function parseFile(file: RcFile): Promise<ExcelParsedObject> {
-  return new Promise((resolve, reject) => {
-    // @ts-ignore
-    const reader = new FileReader();
-    reader.onload = function (e: ProgressEvent<FileReader>) {
-      // @ts-ignore
-      import('xlsx/dist/xlsx.mini.min.js')
-        .then((module) => {
-          try {
-            const XLSX: typeof XLSXNameSpace = module;
-            const data = new Uint8Array((e.target as FileReader).result as any);
-            const workbook = XLSX.read(data, { type: 'array' });
-            resolve(parseExcel(XLSX, workbook));
-          } catch (e) {
-            console.error(e);
-            reject(e.message);
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-          reject('XLSX解析文件加载失败，请重新上传');
-        });
-    };
-    reader.onerror = function (e: ProgressEvent<FileReader>) {
-      reject('读取文件失败，请重新上传');
-    };
-    reader.readAsArrayBuffer(file);
-  });
-}
 
 const WrapperStyle = css`
   width: 100%;
@@ -73,20 +34,49 @@ export const MergePage: FC<MergePageProps> = function ({}) {
     const addToList = (item: any) => {
       setDataList((v) => v.concat(item));
     };
-    if (!file.name.endsWith('.xlsx')) {
-      data.message = '文件类型错误，请上传xlsx文件';
+    const isXlsx = file.name.endsWith('.xlsx');
+    const isJson = file.name.endsWith('.json');
+
+    const getErrorMessage = (e: any) => {
+      if (typeof e === 'string') return e;
+      if (typeof e === 'object' && 'message' in e) return e.message;
+      return '未知错误';
+    };
+
+    if (!isXlsx && !isJson) {
+      data.message = '文件类型错误，请上传 xlsx 文件或 json 文件';
       addToList(data);
     } else {
-      parseFile(file)
-        .then((values) => {
-          data.data = values;
-          data.type = 'success';
-          addToList(data);
-        })
-        .catch((e) => {
-          data.message = e;
-          addToList(data);
-        });
+      if (isXlsx) {
+        file
+          .arrayBuffer()
+          .then((arrayBuffer) => {
+            return parseExcel(arrayBuffer);
+          })
+          .then((values) => {
+            data.data = values;
+            data.type = 'success';
+            addToList(data);
+          })
+          .catch((e) => {
+            data.message = getErrorMessage(e);
+            addToList(data);
+          });
+      } else if (isJson) {
+        file
+          .text()
+          .then((str) => {
+            const json = JSON.parse(str);
+            const parsedData = parseJson(json);
+            data.data = parsedData;
+            data.type = 'success';
+            addToList(data);
+          })
+          .catch((e) => {
+            data.message = getErrorMessage(e);
+            addToList(data);
+          });
+      }
     }
     return false;
   }, []);
@@ -127,13 +117,13 @@ export const MergePage: FC<MergePageProps> = function ({}) {
       <div css={WrapperStyle}>
         <Upload
           name='file'
-          accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .xlsx'
+          accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .xlsx, .json'
           multiple={true}
           beforeUpload={handleBeforeUpload}
           showUploadList={false}
         >
           <Button icon={<UploadOutlined />} type='primary'>
-            导入Excel文件
+            导入 xlsx 文件或 json 文件
           </Button>
         </Upload>
         {dataList.map((item) => (

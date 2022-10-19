@@ -7,44 +7,29 @@ import DownloadOutlined from '@ant-design/icons/DownloadOutlined';
 import { DataItem } from 'types';
 import { PoolAnalysis } from './PoolAnalysis';
 import { renderToCanvas } from './renderToCanvas';
-import { ISMOBILE } from 'const';
+import { ISMOBILE, POOL_TYPES } from 'const';
 import { useGlobalContext } from 'context/GlobalContext';
 import { IconButton } from 'components/IconButton';
 import { FriendLinks } from 'components/FriendLinks';
 import WordCloudCharts from './WordCloudCharts';
 import renderPngTip from 'utils/renderPngTip';
 import downloadCanvas from 'utils/downloadCanvas';
-// @ts-ignore
-import LazyLoad from 'react-lazyload';
 import { BackAndCopy } from 'components/BackAndCopy';
 
-interface AnalysisChartProps {
-  sheetNames: string[];
-  onGetData: (key: string) => DataItem[];
-}
+interface AnalysisChartProps {}
 
-export const AnalysisChart: FC<AnalysisChartProps> = ({ sheetNames, onGetData }) => {
-  const { dataArr, validSheetNames } = useMemo(() => {
-    const dataArr: DataItem[][] = [];
-    const validSheetNames: string[] = [];
-    sheetNames.forEach((key) => {
-      const data = onGetData(key);
-      if (data && data.length !== 0) {
-        dataArr.push(data);
-        validSheetNames.push(key);
-      }
-    });
-    return {
-      dataArr,
-      validSheetNames,
-    };
-  }, [sheetNames]);
+export const AnalysisChart: FC<AnalysisChartProps> = ({}) => {
   const localCache = useCacheContext();
-  const { isVertical } = useGlobalContext();
+  const { isVertical, parsedData } = useGlobalContext();
+
+  const validSheetKeys = useMemo(() => {
+    return POOL_TYPES.filter((sheetKey) => parsedData[sheetKey] && parsedData[sheetKey].length > 0);
+  }, [parsedData]);
+
   const handleRenderPng = useCallback(() => {
     renderPngTip((resolve, reject) => {
       renderToCanvas(
-        validSheetNames.map((key: string) => localCache[key]),
+        validSheetKeys.map((key: string) => localCache[key]),
         isVertical,
         (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
           downloadCanvas(canvas, 'charts.png', resolve);
@@ -101,9 +86,9 @@ export const AnalysisChart: FC<AnalysisChartProps> = ({ sheetNames, onGetData })
           margin: 10px 0;
         `}
       >
-        {validSheetNames
+        {validSheetKeys
           .map((key, index) => {
-            return <PoolAnalysis sheetName={key} data={dataArr[index]} key={key} />;
+            return <PoolAnalysis poolType={key} data={parsedData[key]} key={key} />;
           })
           .filter((v) => !!v)}
       </div>
@@ -117,9 +102,7 @@ export const AnalysisChart: FC<AnalysisChartProps> = ({ sheetNames, onGetData })
           生成图片
         </Button>
       </div>
-      <LazyLoad height={500} scrollContainer={'.ant-layout-content'} once>
-        <WordCloudCharts onGetData={onGetData} />
-      </LazyLoad>
+      <WordCloudCharts />
       <FriendLinks mode='bottom' />
     </div>
   );

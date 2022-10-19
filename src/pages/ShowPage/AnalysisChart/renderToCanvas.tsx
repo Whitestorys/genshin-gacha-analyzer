@@ -275,7 +275,7 @@ const renderTextContent = (
     const { height: fiveStarHistoryHeight, draw: drawHistory } = baseTextSet(
       ['5星历史记录：'],
       fiveStarHistory.map((item) =>
-        colorText(`${item.名称}[${item.保底内}]`, getColorByCount(item.保底内)),
+        colorText(`${item.name}[${item.pity}]`, getColorByCount(item.pity)),
       ),
     );
     height += fiveStarHistoryHeight + LINE_SPACE;
@@ -309,7 +309,7 @@ const renderTextContent = (
   };
 };
 // 绘制尾部链接
-function drawEndLine(ctx: CanvasRenderingContext2D) {
+export function drawEndLine(ctx: CanvasRenderingContext2D) {
   const LINE_PADDING = 20;
   const {
     width: fontWidth,
